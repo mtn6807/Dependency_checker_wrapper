@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/mtn6807/Dependency_checker_wrapper#readme",
   "dependencies": {
+    "axios": "^0.20.0",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
+    "save-prod": "^1.0.0",
     "vulnerable-js": "^1.0.2"
   }
 }
