@@ -3,7 +3,7 @@ const commandLineUsage = require('command-line-usage');
 const axios = require('axios')
 const fs = require('fs');
 const { config } = require('process');
-const OUTPUTFILE = "dependency-check-report.csv"
+const OUTPUTFILE = "dependency-check-report.html"
 const MAXDATASIZE = 10;
 
 function getCommandLineInput(){
@@ -50,7 +50,7 @@ function scanDirAsync(directory){
 
     //run dependency-check
     return new Promise((resolve,reject) =>{ 
-        exec(`dependency-check -s ${directory} -f CSV`, (error, stdout, stderr) => {
+        exec(`dependency-check -s ${directory}`, (error, stdout, stderr) => {
             if (error) {
                 console.log(`error: ${error.message}`);
             }
@@ -79,7 +79,7 @@ function parseRaw(filename){
 }
 
 async function parseRawScan(filename){
-    return (await(parseRaw(filename))).split("\n");
+    return (await(parseRaw(filename)));
 }
 
 async function parseConfig(filename){
@@ -115,26 +115,15 @@ async function sendScanData(config, data){
     const configdata = await parseConfig(config);
     const port = configdata.port;
     const uri = configdata.uri;
+    const scanName = configdata.name;
+    const date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')
     
-    let counter = 0;
     let currentPacket = {
         "final": false,
-        "data": []
+        "name": scanName,
+        "date": date,
+        "data": data
     };
-    data.forEach((result)=>{
-        if(counter>data.length-(MAXDATASIZE-1)){
-            currentPacket.final=true
-        }
-        currentPacket.data.push(result);
-        counter++
-        if(counter%MAXDATASIZE==0){
-            postScan(uri,port,currentPacket)
-            currentPacket = {
-                "final": false,
-                "data": []
-            }
-        }
-    });
     postScan(uri,port,currentPacket)
 }
 
