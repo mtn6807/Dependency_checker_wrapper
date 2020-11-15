@@ -37,7 +37,7 @@ final = {}
 dependenciesl = []
 app.post('/newscan', (req, res) => {
     res.status(200).json({ok: true})
-    filename = "./scans/"+req.body.name+req.body.date+".html".replace(' ','-');
+    filename = "./public/scans/"+req.body.name+req.body.date+".html".replace(' ','-');
     newScan(filename,req.body.data);
     db[req.body.name] = {"date": req.body.date, "html": filename};
     writetoDB(db);
